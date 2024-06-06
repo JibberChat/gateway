@@ -1,9 +1,7 @@
-import { Resolver } from '@nestjs/graphql';
+import { Resolver, Query } from '@nestjs/graphql';
 import { TestService } from '../services/test.service';
-import { Query } from '@nestjs/common';
-import { Test } from '../model/test.model';
 
-@Resolver((of) => Test)
+@Resolver()
 export class TestResolver {
   constructor(private readonly testService: TestService) {}
 
