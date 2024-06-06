@@ -16,7 +16,7 @@ async function bootstrap() {
   app.use(morgan('dev'));
   app.use(json({ limit: '50mb' }));
   app.use(urlencoded({ extended: true, limit: '50mb' }));
-  // app.use(helmet());
+  app.use(helmet({ contentSecurityPolicy: false }));
   app.enableCors();
 
   await app.listen(3000);
