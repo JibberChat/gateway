@@ -6,7 +6,7 @@ export class TestResolver {
   constructor(private readonly testService: TestService) {}
 
   // Query
-  @Query((returns) => String)
+  @Query(() => String)
   async test(): Promise<string> {
     return 'Hello World!';
   }

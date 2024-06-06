@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "@apollo/server": "^4.10.4",
+    "@graphql-tools/utils": "^10.2.1",
     "@nestjs/apollo": "^12.1.0",
     "@nestjs/common": "^10.0.0",
     "@nestjs/core": "^10.0.0",
@@ -30,6 +31,7 @@
     "class-validator": "^0.14.1",
     "cors": "^2.8.5",
     "graphql": "^16.8.1",
+    "graphql-query-complexity": "^0.12.0",
     "helmet": "^7.1.0",
     "morgan": "^1.10.0",
     "reflect-metadata": "^0.2.0",
