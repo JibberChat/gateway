@@ -1,5 +1,5 @@
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
+import { AppModule } from './modules/app.module';
 import { ValidationPipe, VersioningType } from '@nestjs/common';
 import * as morgan from 'morgan';
 import { json, urlencoded } from 'express';
@@ -7,6 +7,7 @@ import helmet from 'helmet';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
   app.setGlobalPrefix('api');
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
   app.enableVersioning({ type: VersioningType.URI });
