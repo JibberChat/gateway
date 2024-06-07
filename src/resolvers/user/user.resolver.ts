@@ -2,6 +2,7 @@ import { USER_SERVICE } from '@infrastructure/configuration/model/user-service.c
 import { Inject } from '@nestjs/common';
 import { Resolver, Query } from '@nestjs/graphql';
 import { ClientProxy } from '@nestjs/microservices';
+import { firstValueFrom, timeout } from 'rxjs';
 
 @Resolver()
 export class UserResolver {
@@ -12,8 +13,9 @@ export class UserResolver {
   // Query
   @Query(() => String)
   async getUsers(): Promise<string> {
-    // await this.userServiceClient.send('test', {})
-
-    return 'data';
+    const data = await firstValueFrom(
+      this.userServiceClient.send({ cmd: 'getUsers' }, {}).pipe(timeout(5000)),
+    );
+    return data;
   }
 }
