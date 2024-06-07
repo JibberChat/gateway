@@ -14,6 +14,10 @@ import {
   UserServiceConfiguration,
 } from '../model/user-service.configuration';
 import { LoggerService } from '@infrastructure/logger/services/logger.service';
+import {
+  CHAT_SERVICE_HOST,
+  CHAT_SERVICE_PORT,
+} from '../model/chat-service.configuration';
 
 @Injectable()
 export class ConfigurationService {
@@ -21,6 +25,7 @@ export class ConfigurationService {
 
   private _appConfig!: AppConfiguration;
   private _userServiceConfig!: UserServiceConfiguration;
+  private _chatServiceConfig!: UserServiceConfiguration;
 
   public isProd!: boolean;
 
@@ -30,6 +35,10 @@ export class ConfigurationService {
 
   get userServiceConfig(): UserServiceConfiguration {
     return this._userServiceConfig;
+  }
+
+  get chatServiceConfig(): UserServiceConfiguration {
+    return this._chatServiceConfig;
   }
 
   constructor(private nestConfigService: ConfigService) {
@@ -58,6 +67,12 @@ export class ConfigurationService {
     this._userServiceConfig = {
       host: this.getVariableFromEnvFile(USER_SERVICE_HOST),
       port: parseInt(this.getVariableFromEnvFile(USER_SERVICE_PORT)),
+    };
+
+    // CHAT SERVICE
+    this._chatServiceConfig = {
+      host: this.getVariableFromEnvFile(CHAT_SERVICE_HOST),
+      port: parseInt(this.getVariableFromEnvFile(CHAT_SERVICE_PORT)),
     };
   }
 

@@ -9,6 +9,8 @@ import { ConfigurationModule } from '@infrastructure/configuration/configuration
 import { ConfigurationService } from '@infrastructure/configuration/services/configuration.service';
 import { ClientProxyFactory, Transport } from '@nestjs/microservices';
 import { USER_SERVICE } from '@infrastructure/configuration/model/user-service.configuration';
+import { ChatResolver } from '@modules/chat/chat.resolver';
+import { CHAT_SERVICE } from '@infrastructure/configuration/model/chat-service.configuration';
 
 @Module({
   imports: [
@@ -32,6 +34,7 @@ import { USER_SERVICE } from '@infrastructure/configuration/model/user-service.c
   ],
   providers: [
     UserResolver,
+    ChatResolver,
 
     {
       provide: USER_SERVICE,
@@ -42,6 +45,20 @@ import { USER_SERVICE } from '@infrastructure/configuration/model/user-service.c
           options: {
             host: userServiceOptions.host,
             port: userServiceOptions.port,
+          },
+        });
+      },
+      inject: [ConfigurationService],
+    },
+    {
+      provide: CHAT_SERVICE,
+      useFactory: (configService: ConfigurationService) => {
+        const chatServiceOptions = configService.chatServiceConfig;
+        return ClientProxyFactory.create({
+          transport: Transport.TCP,
+          options: {
+            host: chatServiceOptions.host,
+            port: chatServiceOptions.port,
           },
         });
       },
