@@ -1,12 +1,14 @@
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './modules/app.module';
+import { AppModule } from './app.module';
 import { ValidationPipe, VersioningType } from '@nestjs/common';
 import * as morgan from 'morgan';
 import { json, urlencoded } from 'express';
 import helmet from 'helmet';
+import { ConfigurationService } from '@infrastructure/configuration/services/configuration.service';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  const config = app.get(ConfigurationService);
 
   app.setGlobalPrefix('api');
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
@@ -19,7 +21,7 @@ async function bootstrap() {
   app.use(helmet({ contentSecurityPolicy: false }));
   app.enableCors();
 
-  await app.listen(3000);
+  await app.listen(config.appConfig.port);
   console.log(`Application is running on: ${await app.getUrl()}`);
 }
 bootstrap();

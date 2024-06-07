@@ -16,6 +16,12 @@
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
-    "noFallthroughCasesInSwitch": false
+    "noFallthroughCasesInSwitch": false,
+    "strict": true,
+    "paths": {
+      "@modules/*": ["src/resolvers/*"],
+      "@common/*": ["./src/common/*"],
+      "@infrastructure/*": ["./src/infrastructure/*"],
+    },
   }
 }
