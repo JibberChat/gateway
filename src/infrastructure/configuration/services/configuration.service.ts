@@ -18,6 +18,10 @@ import {
   CHAT_SERVICE_HOST,
   CHAT_SERVICE_PORT,
 } from '../model/chat-service.configuration';
+import {
+  MEDIA_SERVICE_HOST,
+  MEDIA_SERVICE_PORT,
+} from '../model/media-service.configuration';
 
 @Injectable()
 export class ConfigurationService {
@@ -26,6 +30,7 @@ export class ConfigurationService {
   private _appConfig!: AppConfiguration;
   private _userServiceConfig!: UserServiceConfiguration;
   private _chatServiceConfig!: UserServiceConfiguration;
+  private _mediaServiceConfig!: UserServiceConfiguration;
 
   public isProd!: boolean;
 
@@ -39,6 +44,10 @@ export class ConfigurationService {
 
   get chatServiceConfig(): UserServiceConfiguration {
     return this._chatServiceConfig;
+  }
+
+  get mediaServiceConfig(): UserServiceConfiguration {
+    return this._mediaServiceConfig;
   }
 
   constructor(private nestConfigService: ConfigService) {
@@ -73,6 +82,12 @@ export class ConfigurationService {
     this._chatServiceConfig = {
       host: this.getVariableFromEnvFile(CHAT_SERVICE_HOST),
       port: parseInt(this.getVariableFromEnvFile(CHAT_SERVICE_PORT)),
+    };
+
+    // MEDIA SERVICE
+    this._mediaServiceConfig = {
+      host: this.getVariableFromEnvFile(MEDIA_SERVICE_HOST),
+      port: parseInt(this.getVariableFromEnvFile(MEDIA_SERVICE_PORT)),
     };
   }
 

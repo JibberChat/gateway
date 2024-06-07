@@ -19,7 +19,7 @@
     "noFallthroughCasesInSwitch": false,
     "strict": true,
     "paths": {
-      "@modules/*": ["src/resolvers/*"],
+      "@resolvers/*": ["./src/resolvers/*"],
       "@common/*": ["./src/common/*"],
       "@infrastructure/*": ["./src/infrastructure/*"],
     },

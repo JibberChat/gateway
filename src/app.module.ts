@@ -1,16 +1,21 @@
 import { Module } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
+import { ClientProxyFactory, Transport } from '@nestjs/microservices';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
+import { DirectiveLocation, GraphQLDirective } from 'graphql';
+
 import { join } from 'path';
 import { upperDirectiveTransformer } from '@common/directives/uper-case.directive';
-import { DirectiveLocation, GraphQLDirective } from 'graphql';
-import { UserResolver } from './resolvers/user/user.resolver';
+
+import { MediaResolver } from '@resolvers/media/media.resolver';
+import { UserResolver } from '@resolvers/user/user.resolver';
+import { ChatResolver } from '@resolvers/chat/chat.resolver';
+
 import { ConfigurationModule } from '@infrastructure/configuration/configuration.module';
 import { ConfigurationService } from '@infrastructure/configuration/services/configuration.service';
-import { ClientProxyFactory, Transport } from '@nestjs/microservices';
 import { USER_SERVICE } from '@infrastructure/configuration/model/user-service.configuration';
-import { ChatResolver } from '@modules/chat/chat.resolver';
 import { CHAT_SERVICE } from '@infrastructure/configuration/model/chat-service.configuration';
+import { MEDIA_SERVICE } from '@infrastructure/configuration/model/media-service.configuration';
 
 @Module({
   imports: [
@@ -35,6 +40,7 @@ import { CHAT_SERVICE } from '@infrastructure/configuration/model/chat-service.c
   providers: [
     UserResolver,
     ChatResolver,
+    MediaResolver,
 
     {
       provide: USER_SERVICE,
@@ -59,6 +65,20 @@ import { CHAT_SERVICE } from '@infrastructure/configuration/model/chat-service.c
           options: {
             host: chatServiceOptions.host,
             port: chatServiceOptions.port,
+          },
+        });
+      },
+      inject: [ConfigurationService],
+    },
+    {
+      provide: MEDIA_SERVICE,
+      useFactory: (configService: ConfigurationService) => {
+        const mediaServiceOptions = configService.mediaServiceConfig;
+        return ClientProxyFactory.create({
+          transport: Transport.TCP,
+          options: {
+            host: mediaServiceOptions.host,
+            port: mediaServiceOptions.port,
           },
         });
       },
