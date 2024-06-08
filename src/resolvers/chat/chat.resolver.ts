@@ -1,13 +1,19 @@
 import { CHAT_SERVICE } from '@infrastructure/configuration/model/chat-service.configuration';
 import { Inject } from '@nestjs/common';
-import { Resolver, Query } from '@nestjs/graphql';
+import { Resolver, Query, Args, Mutation, Subscription } from '@nestjs/graphql';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom, timeout } from 'rxjs';
+import { SendMessageInput } from './inferface/message';
+import { SocketService } from 'src/modules/websocket.service';
+import { PubSub } from 'graphql-subscriptions';
+
+const pubSub = new PubSub();
 
 @Resolver()
 export class ChatResolver {
   constructor(
     @Inject(CHAT_SERVICE) private readonly chatServiceClient: ClientProxy,
+    // private readonly socketService: SocketService,
   ) {}
 
   // Query
@@ -18,6 +24,25 @@ export class ChatResolver {
         .send({ cmd: 'getMessages' }, {})
         .pipe(timeout(5000)),
     );
+    console.log(data);
     return data;
+  }
+
+  @Mutation(() => Boolean)
+  async sendMessage(@Args('input') input: SendMessageInput) {
+    console.log(input);
+    await firstValueFrom(
+      this.chatServiceClient
+        .send({ cmd: 'createMessage' }, input)
+        .pipe(timeout(5000)),
+    );
+    // this.socketService.emitEvent('message', input);
+    pubSub.publish('messageAdded', input);
+    return true;
+  }
+
+  @Subscription(() => Boolean)
+  messageAdded() {
+    return pubSub.asyncIterator('messageAdded');
   }
 }

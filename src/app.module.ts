@@ -16,17 +16,19 @@ import { ConfigurationService } from '@infrastructure/configuration/services/con
 import { USER_SERVICE } from '@infrastructure/configuration/model/user-service.configuration';
 import { CHAT_SERVICE } from '@infrastructure/configuration/model/chat-service.configuration';
 import { MEDIA_SERVICE } from '@infrastructure/configuration/model/media-service.configuration';
+// import { WebSocketModule } from './modules/websocket.module';
 
 @Module({
   imports: [
     ConfigurationModule,
+    // WebSocketModule,
 
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       sortSchema: true,
       transformSchema: (schema) => upperDirectiveTransformer(schema, 'upper'),
-      installSubscriptionHandlers: true,
+      playground: true,
       buildSchemaOptions: {
         directives: [
           new GraphQLDirective({
@@ -34,6 +36,14 @@ import { MEDIA_SERVICE } from '@infrastructure/configuration/model/media-service
             locations: [DirectiveLocation.FIELD_DEFINITION],
           }),
         ],
+      },
+      subscriptions: {
+        'graphql-ws': {
+          path: 'subscriptions',
+          onConnect: (connectionParams) => {
+            console.log('Client connected');
+          },
+        },
       },
     }),
   ],

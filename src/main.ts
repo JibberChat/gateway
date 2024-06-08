@@ -1,6 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { ValidationPipe, VersioningType } from '@nestjs/common';
+import { ValidationPipe } from '@nestjs/common';
 import * as morgan from 'morgan';
 import { json, urlencoded } from 'express';
 import helmet from 'helmet';
@@ -10,9 +10,9 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const config = app.get(ConfigurationService);
 
-  app.setGlobalPrefix('api');
+  // app.setGlobalPrefix('api');
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
-  app.enableVersioning({ type: VersioningType.URI });
+  // app.enableVersioning({ type: VersioningType.URI });
 
   // Middlewares
   app.use(morgan('dev'));
@@ -22,6 +22,6 @@ async function bootstrap() {
   app.enableCors();
 
   await app.listen(config.appConfig.port);
-  console.log(`Application is running on: ${await app.getUrl()}`);
+  console.log(`🚀 Application is running on: ${await app.getUrl()}`);
 }
 bootstrap();

@@ -4,8 +4,21 @@
 
 directive @upper on FIELD_DEFINITION
 
+type Mutation {
+  sendMessage(input: SendMessageInput!): Boolean!
+}
+
 type Query {
   getMedias: String!
   getMessages: String!
   getUsers: String!
+}
+
+input SendMessageInput {
+  message: String!
+  userId: String!
+}
+
+type Subscription {
+  messageAdded: Boolean!
 }
