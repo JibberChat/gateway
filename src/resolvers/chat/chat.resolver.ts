@@ -3,7 +3,7 @@ import { Inject } from '@nestjs/common';
 import { Resolver, Query, Args, Mutation, Subscription } from '@nestjs/graphql';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom, timeout } from 'rxjs';
-import { SendMessageInput } from './inferface/message';
+import { SendMessage, SendMessageInput } from './inferface/message';
 import { SocketService } from 'src/modules/websocket.service';
 import { PubSub } from 'graphql-subscriptions';
 
@@ -28,21 +28,22 @@ export class ChatResolver {
     return data;
   }
 
-  @Mutation(() => Boolean)
+  @Mutation(() => SendMessage)
   async sendMessage(@Args('input') input: SendMessageInput) {
-    console.log(input);
+    console.log('input', input);
     await firstValueFrom(
       this.chatServiceClient
         .send({ cmd: 'createMessage' }, input)
         .pipe(timeout(5000)),
     );
     // this.socketService.emitEvent('message', input);
-    pubSub.publish('messageAdded', input);
-    return true;
+    pubSub.publish('messageAdded', { messageAdded: input });
+    return input;
   }
 
-  @Subscription(() => Boolean)
+  @Subscription(() => SendMessage)
   messageAdded() {
     return pubSub.asyncIterator('messageAdded');
+    // return true;
   }
 }

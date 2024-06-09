@@ -39,8 +39,8 @@ import { MEDIA_SERVICE } from '@infrastructure/configuration/model/media-service
       },
       subscriptions: {
         'graphql-ws': {
-          path: 'subscriptions',
-          onConnect: (connectionParams) => {
+          path: '/subscriptions',
+          onConnect: () => {
             console.log('Client connected');
           },
         },
