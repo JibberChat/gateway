@@ -1,47 +1,48 @@
-import { Module } from '@nestjs/common';
-import { GraphQLModule } from '@nestjs/graphql';
-import { ClientProxyFactory, Transport } from '@nestjs/microservices';
-import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
-import { DirectiveLocation, GraphQLDirective } from 'graphql';
+import { DirectiveLocation, GraphQLDirective } from "graphql";
+import { join } from "path";
 
-import { join } from 'path';
-import { upperDirectiveTransformer } from '@common/directives/uper-case.directive';
+import { ApolloDriver, ApolloDriverConfig } from "@nestjs/apollo";
+import { Module } from "@nestjs/common";
+import { GraphQLModule } from "@nestjs/graphql";
+import { ClientProxyFactory, Transport } from "@nestjs/microservices";
 
-import { MediaResolver } from '@resolvers/media/media.resolver';
-import { UserResolver } from '@resolvers/user/user.resolver';
-import { ChatResolver } from '@resolvers/chat/chat.resolver';
+import { ConfigurationModule } from "@infrastructure/configuration/configuration.module";
+import { CHAT_SERVICE } from "@infrastructure/configuration/model/chat-service.configuration";
+import { MEDIA_SERVICE } from "@infrastructure/configuration/model/media-service.configuration";
+import { USER_SERVICE } from "@infrastructure/configuration/model/user-service.configuration";
+import { ConfigurationService } from "@infrastructure/configuration/services/configuration.service";
+import { LoggerModule } from "@infrastructure/logger/logger.module";
 
-import { ConfigurationModule } from '@infrastructure/configuration/configuration.module';
-import { ConfigurationService } from '@infrastructure/configuration/services/configuration.service';
-import { USER_SERVICE } from '@infrastructure/configuration/model/user-service.configuration';
-import { CHAT_SERVICE } from '@infrastructure/configuration/model/chat-service.configuration';
-import { MEDIA_SERVICE } from '@infrastructure/configuration/model/media-service.configuration';
-// import { WebSocketModule } from './modules/websocket.module';
+import { ChatResolver } from "@resolvers/chat/chat.resolver";
+import { MediaResolver } from "@resolvers/media/media.resolver";
+import { UserResolver } from "@resolvers/user/user.resolver";
+
+import { upperDirectiveTransformer } from "@common/directives/uper-case.directive";
 
 @Module({
   imports: [
     ConfigurationModule,
-    // WebSocketModule,
+    LoggerModule,
 
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
-      autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
+      autoSchemaFile: join(process.cwd(), "src/schema.gql"),
       sortSchema: true,
-      transformSchema: (schema) => upperDirectiveTransformer(schema, 'upper'),
+      transformSchema: (schema) => upperDirectiveTransformer(schema, "upper"),
       playground: true,
       buildSchemaOptions: {
         directives: [
           new GraphQLDirective({
-            name: 'upper',
+            name: "upper",
             locations: [DirectiveLocation.FIELD_DEFINITION],
           }),
         ],
       },
       subscriptions: {
-        'graphql-ws': {
-          path: '/subscriptions',
-          onConnect: () => {
-            console.log('Client connected');
+        "graphql-ws": {
+          path: "/subscriptions",
+          onConnect: (context) => {
+            console.log("Connected to websocket");
           },
         },
       },

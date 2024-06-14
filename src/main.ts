@@ -1,10 +1,13 @@
-import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
-import { ValidationPipe } from '@nestjs/common';
-import * as morgan from 'morgan';
-import { json, urlencoded } from 'express';
-import helmet from 'helmet';
-import { ConfigurationService } from '@infrastructure/configuration/services/configuration.service';
+import { json, urlencoded } from "express";
+import helmet from "helmet";
+import * as morgan from "morgan";
+
+import { ValidationPipe } from "@nestjs/common";
+import { NestFactory } from "@nestjs/core";
+
+import { AppModule } from "./app.module";
+
+import { ConfigurationService } from "@infrastructure/configuration/services/configuration.service";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -15,9 +18,9 @@ async function bootstrap() {
   // app.enableVersioning({ type: VersioningType.URI });
 
   // Middlewares
-  app.use(morgan('dev'));
-  app.use(json({ limit: '50mb' }));
-  app.use(urlencoded({ extended: true, limit: '50mb' }));
+  app.use(morgan("dev"));
+  app.use(json({ limit: "50mb" }));
+  app.use(urlencoded({ extended: true, limit: "50mb" }));
   app.use(helmet({ contentSecurityPolicy: false }));
   app.enableCors();
 

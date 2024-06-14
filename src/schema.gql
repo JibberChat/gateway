@@ -4,26 +4,47 @@
 
 directive @upper on FIELD_DEFINITION
 
+type ChatMessage {
+  id: String!
+  message: String!
+  userId: String!
+}
+
+type ChatRoom {
+  id: ID!
+  messages: [ChatMessage!]!
+  name: String!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
 type Mutation {
-  sendMessage(input: SendMessageInput!): SendMessage!
+  createRoom(name: String!): ChatRoom!
+  deleteRoom(roomId: String!): Boolean!
+  leaveRoom(roomId: String!): Boolean!
+  sendMessage(message: String!, roomId: String!): ChatMessage!
+  updateRoom(name: String!, roomId: String!): ChatRoom!
 }
 
 type Query {
+  getMe: User!
   getMedias: String!
   getMessages: String!
-  getUsers: String!
-}
-
-type SendMessage {
-  message: String!
-  userId: String!
-}
-
-input SendMessageInput {
-  message: String!
-  userId: String!
+  getUnreadUserRooms: ChatRoom!
+  getUserProfile(userId: String!): User!
+  getUserRooms: ChatRoom!
 }
 
 type Subscription {
-  messageAdded: SendMessage!
+  userJoinedRoom(roomId: String!): ChatMessage!
+}
+
+type User {
+  createdAt: DateTime!
+  email: String!
+  id: ID!
+  name: String!
 }
