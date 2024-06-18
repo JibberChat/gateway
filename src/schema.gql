@@ -27,6 +27,7 @@ type Mutation {
   leaveRoom(roomId: String!): Boolean!
   sendMessage(message: String!, roomId: String!): ChatMessage!
   updateRoom(name: String!, roomId: String!): ChatRoom!
+  updateUser(email: String!, name: String!, userId: String!): User!
 }
 
 type Query {
