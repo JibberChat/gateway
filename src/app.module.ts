@@ -14,6 +14,7 @@ import { ConfigurationService } from "@infrastructure/configuration/services/con
 import { LoggerModule } from "@infrastructure/logger/logger.module";
 
 import { ChatResolver } from "@resolvers/chat/chat.resolver";
+import { RoomResolver } from "@resolvers/chat/room.resolver";
 import { MediaResolver } from "@resolvers/media/media.resolver";
 import { UserResolver } from "@resolvers/user/user.resolver";
 
@@ -50,6 +51,7 @@ import { upperDirectiveTransformer } from "@common/directives/uper-case.directiv
   ],
   providers: [
     UserResolver,
+    RoomResolver,
     ChatResolver,
     MediaResolver,
 

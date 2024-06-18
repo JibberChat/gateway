@@ -10,6 +10,10 @@ type ChatMessage {
   userId: String!
 }
 
+type ChatMessages {
+  messages: [ChatMessage!]!
+}
+
 type ChatRoom {
   id: ID!
   messages: [ChatMessage!]!
@@ -33,7 +37,7 @@ type Mutation {
 type Query {
   getMe: User!
   getMedias: String!
-  getMessages: String!
+  getRoomMessages(roomId: String!): ChatMessages!
   getUnreadUserRooms: ChatRoom!
   getUserProfile(userId: String!): User!
   getUserRooms: ChatRoom!
