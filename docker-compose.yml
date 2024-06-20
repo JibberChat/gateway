@@ -2,17 +2,25 @@
 version: "3.7"
 
 services:
-  postgres:
+  postgres-chat:
     image: postgres:16.3-alpine3.20
-    container_name: postgres
+    container_name: postgres-chat
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: postgres
+      POSTGRES_DB: chat-db
     ports:
-      - "5432:5432"
-    # volumes:
-    #   - ./postgres-data:/var/lib/postgresql/data
+      - "5430:5432"
+
+  postgres-user:
+    image: postgres:16.3-alpine3.20
+    container_name: postgres-user
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: user-db
+    ports:
+      - "5431:5432"
 
   redis:
     image: redis:7.2.5-alpine
