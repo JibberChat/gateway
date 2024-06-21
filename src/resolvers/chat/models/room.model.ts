@@ -1,6 +1,6 @@
 import { Field, ID, ObjectType } from "@nestjs/graphql";
 
-import { ChatMessage } from "./message.model";
+// import { ChatMessage } from "./message.model";
 
 @ObjectType()
 export class ChatRoom {

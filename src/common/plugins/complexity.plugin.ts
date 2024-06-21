@@ -9,6 +9,7 @@ import { GraphQLSchemaHost } from "@nestjs/graphql";
 export class ComplexityPlugin implements ApolloServerPlugin {
   constructor(private gqlSchemaHost: GraphQLSchemaHost) {}
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async requestDidStart(): Promise<GraphQLRequestListener<any>> {
     const { schema } = this.gqlSchemaHost;
 

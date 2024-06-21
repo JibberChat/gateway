@@ -1,27 +1,12 @@
-import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { Injectable } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 
-import {
-  APP_NAME,
-  APP_PORT,
-  APP_VERSION,
-  AppConfiguration,
-  NODE_ENV,
-} from '../model/app-configuration';
-import {
-  USER_SERVICE_HOST,
-  USER_SERVICE_PORT,
-  UserServiceConfiguration,
-} from '../model/user-service.configuration';
-import { LoggerService } from '@infrastructure/logger/services/logger.service';
-import {
-  CHAT_SERVICE_HOST,
-  CHAT_SERVICE_PORT,
-} from '../model/chat-service.configuration';
-import {
-  MEDIA_SERVICE_HOST,
-  MEDIA_SERVICE_PORT,
-} from '../model/media-service.configuration';
+import { APP_NAME, APP_PORT, APP_VERSION, AppConfiguration, NODE_ENV } from "../model/app-configuration";
+import { CHAT_SERVICE_HOST, CHAT_SERVICE_PORT } from "../model/chat-service.configuration";
+import { MEDIA_SERVICE_HOST, MEDIA_SERVICE_PORT } from "../model/media-service.configuration";
+import { USER_SERVICE_HOST, USER_SERVICE_PORT, UserServiceConfiguration } from "../model/user-service.configuration";
+
+import { LoggerService } from "@infrastructure/logger/services/logger.service";
 
 @Injectable()
 export class ConfigurationService {
@@ -52,10 +37,7 @@ export class ConfigurationService {
 
   constructor(private nestConfigService: ConfigService) {
     this.setupEnvironment();
-    this.logger.log(
-      'Configuration service initialized.',
-      this.constructor.name,
-    );
+    this.logger.log("Configuration service initialized.", this.constructor.name);
     this.logger.log(`App name: ${this._appConfig.name}`, this.constructor.name);
   }
 
@@ -70,7 +52,7 @@ export class ConfigurationService {
       env: appEnv,
     };
 
-    this.isProd = appEnv.includes('prod');
+    this.isProd = appEnv.includes("prod");
 
     // USER SERVICE
     this._userServiceConfig = {
@@ -94,10 +76,7 @@ export class ConfigurationService {
   private getVariableFromEnvFile(key: string): string {
     const variable = this.nestConfigService.get<string>(key);
     if (!variable) {
-      this.logger.error(
-        `No ${key} could be found from env file.`,
-        this.constructor.name,
-      );
+      this.logger.error(`No ${key} could be found from env file.`, this.constructor.name);
       throw new Error(`No ${key} could be found from env file.`);
     }
     return variable;
