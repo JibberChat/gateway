@@ -10,6 +10,6 @@ export class ChatRoom {
   @Field()
   name: string;
 
-  @Field(() => [ChatMessage])
-  messages: ChatMessage[];
+  // @Field(() => [ChatMessage])
+  // messages: ChatMessage[];
 }

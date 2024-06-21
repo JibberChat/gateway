@@ -16,7 +16,6 @@ type ChatMessages {
 
 type ChatRoom {
   id: ID!
-  messages: [ChatMessage!]!
   name: String!
 }
 
