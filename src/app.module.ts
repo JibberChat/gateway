@@ -42,7 +42,7 @@ import { upperDirectiveTransformer } from "@common/directives/uper-case.directiv
       subscriptions: {
         "graphql-ws": {
           path: "/subscriptions",
-          onConnect: (context) => {
+          onConnect: () => {
             console.log("Connected to websocket");
           },
         },
