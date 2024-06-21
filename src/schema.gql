@@ -6,8 +6,8 @@ directive @upper on FIELD_DEFINITION
 
 type ChatMessage {
   id: String!
-  message: String!
-  userId: String!
+  text: String!
+  user: UserMessage!
 }
 
 type ChatMessages {
@@ -51,5 +51,9 @@ type User {
   createdAt: DateTime!
   email: String!
   id: ID!
+  name: String!
+}
+
+type UserMessage {
   name: String!
 }

@@ -14,3 +14,9 @@ export class User {
   @Field()
   createdAt: Date;
 }
+
+@ObjectType()
+export class UserMessage {
+  @Field()
+  name: string;
+}

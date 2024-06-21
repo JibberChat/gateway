@@ -71,7 +71,7 @@ export class ChatResolver {
         )
     );
     pubSub.publish("userJoinedRoom-" + roomId, { userId: "12", message });
-    return { userId: "12", message };
+    return { id: "1", text: message };
   }
 
   @Subscription(() => ChatMessage, {

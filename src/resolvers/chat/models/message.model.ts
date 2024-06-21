@@ -1,4 +1,6 @@
-import { Field, InputType, ObjectType } from "@nestjs/graphql";
+import { Field, ObjectType } from "@nestjs/graphql";
+
+import { UserMessage } from "@resolvers/user/user.model";
 
 @ObjectType()
 export class ChatMessage {
@@ -6,11 +8,12 @@ export class ChatMessage {
   id: string;
 
   @Field()
-  userId: string;
+  text: string;
 
   @Field()
-  message: string;
+  user: UserMessage;
 }
+
 @ObjectType()
 export class ChatMessages {
   @Field(() => [ChatMessage])
