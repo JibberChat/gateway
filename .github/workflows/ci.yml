@@ -23,7 +23,7 @@ jobs:
         run: npm install -g pnpm@7  # Ensure pnpm executable is installed to the global scope
 
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --no-frozen-lockfile
 
       - name: Run tests
         run: pnpm run test
@@ -44,7 +44,7 @@ jobs:
         run: npm install -g pnpm@7  # Ensure pnpm executable is installed to the global scope
 
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --no-frozen-lockfile
 
       - name: Run linting
         run: pnpm run lint
@@ -65,7 +65,7 @@ jobs:
         run: npm install -g pnpm@7  # Ensure pnpm executable is installed to the global scope
 
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --no-frozen-lockfile
 
       - name: Run type checking
         run: pnpm run typecheck
