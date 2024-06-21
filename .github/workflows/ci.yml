@@ -1,4 +1,4 @@
-name: ๐ Continuous Integration
+name: Continuous Integration
 
 on:
   push:
@@ -50,7 +50,7 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: ๐งน Run linting
+      - name: Run linting
         run: pnpm run lint
 
   typecheck:
@@ -73,5 +73,5 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: ๐ Run type checking
+      - name: Run type checking
         run: pnpm run typecheck
