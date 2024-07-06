@@ -1,3 +1,4 @@
+import { PrometheusModule } from "@willsoto/nestjs-prometheus";
 import { DirectiveLocation, GraphQLDirective } from "graphql";
 import { join } from "path";
 
@@ -11,6 +12,7 @@ import { CHAT_SERVICE } from "@infrastructure/configuration/model/chat-service.c
 import { MEDIA_SERVICE } from "@infrastructure/configuration/model/media-service.configuration";
 import { USER_SERVICE } from "@infrastructure/configuration/model/user-service.configuration";
 import { ConfigurationService } from "@infrastructure/configuration/services/configuration.service";
+import { HealthModule } from "@infrastructure/health/health.module";
 import { LoggerModule } from "@infrastructure/logger/logger.module";
 
 import { ChatResolver } from "@resolvers/chat/chat.resolver";
@@ -23,8 +25,9 @@ import { upperDirectiveTransformer } from "@common/directives/uper-case.directiv
 @Module({
   imports: [
     ConfigurationModule,
+    HealthModule,
     LoggerModule,
-
+    PrometheusModule.register(),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile: join(process.cwd(), "src/schema.gql"),

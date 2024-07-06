@@ -3,15 +3,19 @@ import helmet from "helmet";
 import * as morgan from "morgan";
 
 import { ValidationPipe } from "@nestjs/common";
-import { NestFactory } from "@nestjs/core";
+import { HttpAdapterHost, NestFactory } from "@nestjs/core";
 
 import { AppModule } from "./app.module";
 
 import { ConfigurationService } from "@infrastructure/configuration/services/configuration.service";
+import { GlobalExceptionFilter } from "@infrastructure/filter/global-exception.filter";
+import { LoggerInterceptor } from "@infrastructure/logger/logger.interceptor";
+import { LoggerService } from "@infrastructure/logger/services/logger.service";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  const config = app.get(ConfigurationService);
+  const configService = app.get(ConfigurationService);
+  const loggerService = app.get(LoggerService);
 
   // app.setGlobalPrefix('api');
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
@@ -24,7 +28,11 @@ async function bootstrap() {
   app.use(helmet({ contentSecurityPolicy: false }));
   app.enableCors();
 
-  await app.listen(config.appConfig.port);
-  console.log(`🚀 Application is running on: ${await app.getUrl()}`);
+  const { httpAdapter } = app.get(HttpAdapterHost);
+  app.useGlobalFilters(new GlobalExceptionFilter(httpAdapter, loggerService));
+  app.useGlobalInterceptors(new LoggerInterceptor());
+
+  await app.listen(configService.appConfig.port);
+  loggerService.info(`🚀 Application is running on: ${await app.getUrl()}`, "Bootstrap");
 }
 bootstrap();

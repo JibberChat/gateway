@@ -22,6 +22,7 @@
       "@resolvers/*": ["./src/resolvers/*"],
       "@common/*": ["./src/common/*"],
       "@infrastructure/*": ["./src/infrastructure/*"],
+      "@helpers/*": ["./src/helpers/*"],
     },
   }
 }

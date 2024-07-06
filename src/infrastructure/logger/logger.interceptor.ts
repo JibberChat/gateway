@@ -1,17 +1,23 @@
-/* eslint-disable no-console */
-import chalk from "chalk";
+import { green, yellow } from "chalk";
 import { catchError, tap } from "rxjs";
 
 import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from "@nestjs/common";
 
+import { LoggerService } from "./services/logger.service";
+
 @Injectable()
 export class LoggerInterceptor implements NestInterceptor {
+  private readonly loggerSerivce: LoggerService;
+
   intercept(context: ExecutionContext, next: CallHandler) {
     const req = context.switchToHttp().getRequest();
     const { statusCode } = context.switchToHttp().getResponse();
     const { url, method, params, query, body } = req;
 
-    console.log(chalk.yellow("Request"), { url, method, params, query, body });
+    this.loggerSerivce.info(
+      yellow("Request") + JSON.stringify({ url, method, params, query, body }),
+      this.constructor.name
+    );
     return next
       .handle()
       .pipe(
@@ -21,9 +27,8 @@ export class LoggerInterceptor implements NestInterceptor {
       )
       .pipe(
         tap((data) => {
-          // if request url is /api/metrics
           if (url === "/api/metrics") return;
-          console.log(chalk.green("Response"), { statusCode, data });
+          this.loggerSerivce.info(green("Response") + JSON.stringify({ statusCode, data }), this.constructor.name);
         })
       );
   }
