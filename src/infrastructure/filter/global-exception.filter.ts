@@ -36,10 +36,11 @@ export class GlobalExceptionFilter extends BaseExceptionFilter {
 
   returnError(error: Error, response: Response) {
     this.logger.error(LOG_PREFIX + " " + error.message, this.constructor.name, error.stack ?? String(error));
-    response.status(HttpStatus.BAD_REQUEST).json({
-      statusCode: HttpStatus.BAD_REQUEST,
-      message: MESSAGES.CONTACT_ADMIN,
-    });
+    // response.status(HttpStatus.BAD_REQUEST).json({
+    //   statusCode: HttpStatus.BAD_REQUEST,
+    //   message: MESSAGES.CONTACT_ADMIN,
+    // });
+    // response.statusMessage = MESSAGES.CONTACT_ADMIN;
   }
 
   catch(exception: unknown, host: ArgumentsHost) {
@@ -55,7 +56,7 @@ export class GlobalExceptionFilter extends BaseExceptionFilter {
           this.constructor.name,
           exception.message
         );
-        response.status(statusCode).json({ statusCode, message });
+        // response.status(statusCode).json({ statusCode, message });
       } else {
         // Unexpected internal error, send it to sentry
         this.returnError(new Error(`Unexpected internal error, ${inspect(exception)}`), response);

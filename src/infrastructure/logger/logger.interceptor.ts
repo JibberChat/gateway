@@ -7,17 +7,14 @@ import { LoggerService } from "./services/logger.service";
 
 @Injectable()
 export class LoggerInterceptor implements NestInterceptor {
-  private readonly loggerSerivce: LoggerService;
+  private readonly loggerSerivce = new LoggerService();
 
   intercept(context: ExecutionContext, next: CallHandler) {
-    const req = context.switchToHttp().getRequest();
-    const { statusCode } = context.switchToHttp().getResponse();
-    const { url, method, params, query, body } = req;
+    const args = context.getArgs();
+    const req = args[3];
+    const { key, typename } = req.path;
 
-    this.loggerSerivce.info(
-      yellow("Request") + JSON.stringify({ url, method, params, query, body }),
-      this.constructor.name
-    );
+    this.loggerSerivce.info(yellow("Request") + JSON.stringify({ key, typename }), this.constructor.name);
     return next
       .handle()
       .pipe(
@@ -27,8 +24,9 @@ export class LoggerInterceptor implements NestInterceptor {
       )
       .pipe(
         tap((data) => {
-          if (url === "/api/metrics") return;
-          this.loggerSerivce.info(green("Response") + JSON.stringify({ statusCode, data }), this.constructor.name);
+          // if (typename === "/api/metrics") return;
+          console.log("data", data);
+          this.loggerSerivce.info(green("Response") + JSON.stringify({ data }), this.constructor.name);
         })
       );
   }

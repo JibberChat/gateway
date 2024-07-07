@@ -17,6 +17,7 @@ export class RoomResolver {
     const data = await firstValueFrom(
       this.chatServiceClient.send({ cmd: "getUserRooms" }, { userId: "1" }).pipe(timeout(5000))
     );
+    console.log(data);
     return data;
   }
 
