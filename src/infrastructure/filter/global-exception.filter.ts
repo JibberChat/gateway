@@ -2,8 +2,8 @@ import { ApolloError, AuthenticationError, UserInputError } from "apollo-server-
 import { red } from "chalk";
 import { inspect } from "util";
 
-import { ArgumentsHost, Catch, ExceptionFilter, HttpException } from "@nestjs/common";
-import { GqlArgumentsHost, GqlExceptionFilter } from "@nestjs/graphql";
+import { Catch, ExceptionFilter, HttpException } from "@nestjs/common";
+import { GqlExceptionFilter } from "@nestjs/graphql";
 
 import { LoggerService } from "@infrastructure/logger/services/logger.service";
 
@@ -32,10 +32,7 @@ export class GlobalExceptionFilter implements ExceptionFilter, GqlExceptionFilte
     this.logger = logger;
   }
 
-  catch(exception: unknown, host: ArgumentsHost) {
-    const gqlHost = GqlArgumentsHost.create(host);
-    const context = gqlHost.getContext();
-
+  catch(exception: unknown) {
     if (exception instanceof Error) {
       if (exception instanceof HttpException) {
         const statusCode = exception.getStatus();

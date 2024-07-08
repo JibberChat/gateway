@@ -3,7 +3,7 @@ import helmet from "helmet";
 import * as morgan from "morgan";
 
 import { ValidationPipe } from "@nestjs/common";
-import { HttpAdapterHost, NestFactory } from "@nestjs/core";
+import { NestFactory } from "@nestjs/core";
 
 import { AppModule } from "./app.module";
 
@@ -28,7 +28,6 @@ async function bootstrap() {
   app.use(helmet({ contentSecurityPolicy: false }));
   app.enableCors();
 
-  const { httpAdapter } = app.get(HttpAdapterHost);
   app.useGlobalFilters(new GlobalExceptionFilter(loggerService));
   app.useGlobalInterceptors(new LoggerInterceptor(loggerService));
 

@@ -9,8 +9,6 @@ export function upperDirectiveTransformer(schema: GraphQLSchema, directiveName: 
       if (upperDirective) {
         const { resolve = defaultFieldResolver } = fieldConfig;
 
-        // Replace the original resolver with a function that *first* calls
-        // the original resolver, then converts its result to upper case
         fieldConfig.resolve = async function (source, args, context, info) {
           const result = await resolve(source, args, context, info);
           if (typeof result === "string") {

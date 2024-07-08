@@ -5,14 +5,9 @@ import { fieldExtensionsEstimator, getComplexity, simpleEstimator } from "graphq
 import { Plugin } from "@nestjs/apollo";
 import { GraphQLSchemaHost } from "@nestjs/graphql";
 
-import { LoggerService } from "@infrastructure/logger/services/logger.service";
-
 @Plugin()
 export class ComplexityPlugin implements ApolloServerPlugin {
-  constructor(
-    private gqlSchemaHost: GraphQLSchemaHost,
-    private readonly loggerService: LoggerService
-  ) {}
+  constructor(private gqlSchemaHost: GraphQLSchemaHost) {}
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async requestDidStart(): Promise<GraphQLRequestListener<any>> {
@@ -31,7 +26,6 @@ export class ComplexityPlugin implements ApolloServerPlugin {
         if (complexity >= 20) {
           throw new GraphQLError(`Query is too complex: ${complexity}. Maximum allowed complexity: 20`);
         }
-        // this.loggerService.info("Query Complexity: " + complexity, this.constructor.name);
       },
     };
   }

@@ -15,7 +15,7 @@ export class DateScalar implements CustomScalar<number, Date> {
 
   serialize(value: unknown): number {
     if (value instanceof Date) {
-      return value.getTime(); // value sent to the client
+      return value.getTime();
     }
     throw new Error("Invalid value for DateScalar. Expected a Date.");
   }
