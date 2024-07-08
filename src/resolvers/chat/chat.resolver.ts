@@ -23,14 +23,7 @@ export class ChatResolver {
       this.chatServiceClient.send({ cmd: "getRoomMessages" }, { roomId: roomId }).pipe(timeout(5000))
     );
     return data;
-    // return data[0];
   }
-
-  // @Query(() => String)
-  // async getMessages(): Promise<string> {
-  //   const data = await firstValueFrom(this.chatServiceClient.send({ cmd: "getMessages" }, {}).pipe(timeout(5000)));
-  //   return data;
-  // }
 
   @Mutation(() => ChatMessage)
   async sendMessage(@Args("roomId") roomId: string, @Args("message") message: string) {
@@ -53,7 +46,7 @@ export class ChatResolver {
 
     // if (!room || roomId !== room.id) throw new Error("User is not authorized to send message");
 
-    await firstValueFrom(
+    const messageSent = await firstValueFrom(
       this.chatServiceClient
         .send(
           { cmd: "sendMessageToRoom" },
@@ -70,7 +63,8 @@ export class ChatResolver {
           })
         )
     );
-    pubSub.publish("userJoinedRoom-" + roomId, { userId: "12", message });
+
+    pubSub.publish("userJoinedRoom-" + roomId, { id: messageSent.id, text: messageSent.text, user: messageSent.user });
     return { id: "1", text: message };
   }
 
