@@ -13,9 +13,3 @@ export class ChatMessage {
   @Field()
   user: UserMessage;
 }
-
-@ObjectType()
-export class ChatMessages {
-  @Field(() => [ChatMessage])
-  messages: ChatMessage[];
-}

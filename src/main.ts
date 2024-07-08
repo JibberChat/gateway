@@ -29,8 +29,8 @@ async function bootstrap() {
   app.enableCors();
 
   const { httpAdapter } = app.get(HttpAdapterHost);
-  app.useGlobalFilters(new GlobalExceptionFilter(httpAdapter, loggerService));
-  app.useGlobalInterceptors(new LoggerInterceptor());
+  app.useGlobalFilters(new GlobalExceptionFilter(loggerService));
+  app.useGlobalInterceptors(new LoggerInterceptor(loggerService));
 
   await app.listen(configService.appConfig.port);
   loggerService.info(`🚀 Application is running on: ${await app.getUrl()}`, "Bootstrap");

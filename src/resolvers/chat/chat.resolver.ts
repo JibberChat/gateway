@@ -5,7 +5,7 @@ import { Inject } from "@nestjs/common";
 import { Args, Mutation, Query, Resolver, Subscription } from "@nestjs/graphql";
 import { ClientProxy } from "@nestjs/microservices";
 
-import { ChatMessage, ChatMessages } from "./models/message.model";
+import { ChatMessage } from "./models/message-object.model";
 
 import { CHAT_SERVICE } from "@infrastructure/configuration/model/chat-service.configuration";
 import { LoggerService } from "@infrastructure/logger/services/logger.service";
@@ -17,12 +17,12 @@ export class ChatResolver {
     private readonly loggerService: LoggerService
   ) {}
 
-  @Query(() => ChatMessages)
-  async getRoomMessages(@Args("roomId") roomId: string): Promise<ChatMessages> {
+  @Query(() => [ChatMessage])
+  async getRoomMessages(@Args("roomId") roomId: string): Promise<ChatMessage[]> {
     const data: ChatMessage[] = await firstValueFrom(
       this.chatServiceClient.send({ cmd: "getRoomMessages" }, { roomId: roomId }).pipe(timeout(5000))
     );
-    return { messages: data };
+    return data;
     // return data[0];
   }
 

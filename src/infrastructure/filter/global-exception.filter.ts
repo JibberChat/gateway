@@ -1,9 +1,9 @@
+import { ApolloError, AuthenticationError, UserInputError } from "apollo-server-express";
 import { red } from "chalk";
-import { Response } from "express";
 import { inspect } from "util";
 
-import { ArgumentsHost, Catch, HttpException, HttpServer, HttpStatus } from "@nestjs/common";
-import { BaseExceptionFilter } from "@nestjs/core";
+import { ArgumentsHost, Catch, ExceptionFilter, HttpException } from "@nestjs/common";
+import { GqlArgumentsHost, GqlExceptionFilter } from "@nestjs/graphql";
 
 import { LoggerService } from "@infrastructure/logger/services/logger.service";
 
@@ -11,7 +11,7 @@ import MESSAGES from "@helpers/messages/http-messages";
 
 const LOG_PREFIX = red("Response/Error");
 
-function getHttpExceptionMessage(exception: HttpException): string {
+function getGraphQLExceptionMessage(exception: HttpException): string {
   const response = exception.getResponse();
   if (typeof response === "object") {
     if ("message" in response) {
@@ -20,50 +20,59 @@ function getHttpExceptionMessage(exception: HttpException): string {
         return response.message.join("\n");
     }
   }
-
   if (typeof response === "string") return response;
   return exception.message;
 }
 
 @Catch()
-export class GlobalExceptionFilter extends BaseExceptionFilter {
+export class GlobalExceptionFilter implements ExceptionFilter, GqlExceptionFilter {
   private readonly logger: LoggerService;
 
-  constructor(httpAdapter: HttpServer, logger: LoggerService) {
-    super(httpAdapter);
+  constructor(logger: LoggerService) {
     this.logger = logger;
   }
 
-  returnError(error: Error, response: Response) {
-    this.logger.error(LOG_PREFIX + " " + error.message, this.constructor.name, error.stack ?? String(error));
-    // response.status(HttpStatus.BAD_REQUEST).json({
-    //   statusCode: HttpStatus.BAD_REQUEST,
-    //   message: MESSAGES.CONTACT_ADMIN,
-    // });
-    // response.statusMessage = MESSAGES.CONTACT_ADMIN;
-  }
-
   catch(exception: unknown, host: ArgumentsHost) {
-    const ctx = host.switchToHttp();
-    const response = ctx.getResponse<Response>();
+    const gqlHost = GqlArgumentsHost.create(host);
+    const context = gqlHost.getContext();
 
     if (exception instanceof Error) {
       if (exception instanceof HttpException) {
         const statusCode = exception.getStatus();
-        const message = getHttpExceptionMessage(exception);
+        const message = getGraphQLExceptionMessage(exception);
         this.logger.error(
           LOG_PREFIX + " " + JSON.stringify({ statusCode, message }),
           this.constructor.name,
           exception.message
         );
-        // response.status(statusCode).json({ statusCode, message });
+        // Map HttpException to ApolloError with proper status code
+        if (statusCode === 400) {
+          throw new UserInputError(message);
+        } else if (statusCode === 401) {
+          throw new AuthenticationError(message);
+        } else {
+          throw new ApolloError(message, String(statusCode));
+        }
       } else {
-        // Unexpected internal error, send it to sentry
-        this.returnError(new Error(`Unexpected internal error, ${inspect(exception)}`), response);
+        // Unexpected internal error, log and throw ApolloError
+        const error = new Error(`Unexpected internal error, ${inspect(exception)}`);
+        this.logger.error(LOG_PREFIX + " " + error.message, this.constructor.name, error.stack ?? String(error));
+        throw new ApolloError(MESSAGES.CONTACT_ADMIN);
       }
+    } else if (exception instanceof Object) {
+      const { message, error } = exception as { message?: string; error: { message: string; statusCode: number } };
+      const errMsg = message ?? MESSAGES.CONTACT_ADMIN;
+      const errStatusCode = error.statusCode ?? 500;
+      this.logger.error(
+        LOG_PREFIX + " " + JSON.stringify({ statusCode: errStatusCode, message: errMsg }),
+        this.constructor.name
+      );
+      throw new ApolloError(errMsg, String(errStatusCode));
     } else {
-      // This should never happen: it means that the exception itself is not a JS error; we rethrow it as an unexcepted error type
-      this.returnError(new Error(`Unexpected error type, ${inspect(exception)}`), response);
+      // This should never happen: it means that the exception itself is not a JS error; rethrow it as an unexpected error type
+      const error = new Error(`Unexpected error type, ${inspect(exception)}`);
+      this.logger.error(LOG_PREFIX + " " + error.message, this.constructor.name, error.stack ?? String(error));
+      throw new ApolloError(MESSAGES.CONTACT_ADMIN);
     }
   }
 }

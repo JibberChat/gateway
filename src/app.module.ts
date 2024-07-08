@@ -5,7 +5,7 @@ import { join } from "path";
 import { ApolloDriver, ApolloDriverConfig } from "@nestjs/apollo";
 import { Module } from "@nestjs/common";
 import { GraphQLModule } from "@nestjs/graphql";
-import { ClientProxyFactory, Transport } from "@nestjs/microservices";
+import { ClientsModule, Transport } from "@nestjs/microservices";
 
 import { ConfigurationModule } from "@infrastructure/configuration/configuration.module";
 import { CHAT_SERVICE } from "@infrastructure/configuration/model/chat-service.configuration";
@@ -16,8 +16,8 @@ import { HealthModule } from "@infrastructure/health/health.module";
 import { LoggerModule } from "@infrastructure/logger/logger.module";
 
 import { ChatResolver } from "@resolvers/chat/chat.resolver";
-import { RoomResolver } from "@resolvers/chat/room.resolver";
 import { MediaResolver } from "@resolvers/media/media.resolver";
+import { RoomResolver } from "@resolvers/room/room.resolver";
 import { UserResolver } from "@resolvers/user/user.resolver";
 
 import { upperDirectiveTransformer } from "@common/directives/uper-case.directive";
@@ -51,55 +51,57 @@ import { upperDirectiveTransformer } from "@common/directives/uper-case.directiv
         },
       },
     }),
+    ClientsModule.registerAsync({
+      isGlobal: true,
+      clients: [
+        {
+          name: USER_SERVICE,
+          imports: [ConfigurationModule],
+          useFactory: (configService: ConfigurationService) => {
+            const userServiceOptions = configService.userServiceConfig;
+            return {
+              transport: Transport.TCP,
+              options: {
+                host: userServiceOptions.host,
+                port: userServiceOptions.port,
+              },
+            };
+          },
+          inject: [ConfigurationService],
+        },
+        {
+          name: CHAT_SERVICE,
+          imports: [ConfigurationModule],
+          useFactory: (configService: ConfigurationService) => {
+            const chatServiceOptions = configService.chatServiceConfig;
+            return {
+              transport: Transport.TCP,
+              options: {
+                host: chatServiceOptions.host,
+                port: chatServiceOptions.port,
+              },
+            };
+          },
+          inject: [ConfigurationService],
+        },
+        {
+          name: MEDIA_SERVICE,
+          imports: [ConfigurationModule],
+          useFactory: (configService: ConfigurationService) => {
+            const mediaServiceOptions = configService.mediaServiceConfig;
+            return {
+              transport: Transport.TCP,
+              options: {
+                host: mediaServiceOptions.host,
+                port: mediaServiceOptions.port,
+              },
+            };
+          },
+          inject: [ConfigurationService],
+        },
+      ],
+    }),
   ],
-  providers: [
-    UserResolver,
-    RoomResolver,
-    ChatResolver,
-    MediaResolver,
-
-    {
-      provide: USER_SERVICE,
-      useFactory: (configService: ConfigurationService) => {
-        const userServiceOptions = configService.userServiceConfig;
-        return ClientProxyFactory.create({
-          transport: Transport.TCP,
-          options: {
-            host: userServiceOptions.host,
-            port: userServiceOptions.port,
-          },
-        });
-      },
-      inject: [ConfigurationService],
-    },
-    {
-      provide: CHAT_SERVICE,
-      useFactory: (configService: ConfigurationService) => {
-        const chatServiceOptions = configService.chatServiceConfig;
-        return ClientProxyFactory.create({
-          transport: Transport.TCP,
-          options: {
-            host: chatServiceOptions.host,
-            port: chatServiceOptions.port,
-          },
-        });
-      },
-      inject: [ConfigurationService],
-    },
-    {
-      provide: MEDIA_SERVICE,
-      useFactory: (configService: ConfigurationService) => {
-        const mediaServiceOptions = configService.mediaServiceConfig;
-        return ClientProxyFactory.create({
-          transport: Transport.TCP,
-          options: {
-            host: mediaServiceOptions.host,
-            port: mediaServiceOptions.port,
-          },
-        });
-      },
-      inject: [ConfigurationService],
-    },
-  ],
+  providers: [UserResolver, ChatResolver, RoomResolver, MediaResolver],
 })
 export class AppModule {}

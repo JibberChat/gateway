@@ -10,12 +10,12 @@ type ChatMessage {
   user: UserMessage!
 }
 
-type ChatMessages {
-  messages: [ChatMessage!]!
-}
-
 type ChatRoom {
   id: ID!
+  name: String!
+}
+
+input CreateRoomInput {
   name: String!
 }
 
@@ -24,26 +24,35 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
+input DeleteOrLeaveRoomInput {
+  id: ID!
+}
+
 type Mutation {
-  createRoom(name: String!): ChatRoom!
-  deleteRoom(roomId: String!): Boolean!
-  leaveRoom(roomId: String!): Boolean!
+  createRoom(createRoomInput: CreateRoomInput!): ChatRoom!
+  deleteRoom(deleteRoomInput: DeleteOrLeaveRoomInput!): Boolean!
+  leaveRoom(leaveRoomInput: DeleteOrLeaveRoomInput!): Boolean!
   sendMessage(message: String!, roomId: String!): ChatMessage!
-  updateRoom(name: String!, roomId: String!): ChatRoom!
+  updateRoom(updateRoomInput: UpdateRoomInput!): ChatRoom!
   updateUser(email: String!, name: String!, userId: String!): User!
 }
 
 type Query {
   getMe: User!
   getMedias: String!
-  getRoomMessages(roomId: String!): ChatMessages!
-  getUnreadUserRooms: ChatRoom!
+  getRoomMessages(roomId: String!): [ChatMessage!]!
+  getUnreadUserRooms: [ChatRoom!]!
   getUserProfile(userId: String!): User!
-  getUserRooms: ChatRoom!
+  getUserRooms: [ChatRoom!]!
 }
 
 type Subscription {
   userJoinedRoom(roomId: String!): ChatMessage!
+}
+
+input UpdateRoomInput {
+  id: ID!
+  name: String!
 }
 
 type User {
