@@ -65,8 +65,6 @@ export class ChatResolver {
         )
     );
 
-    console.log("messageSent", messageSent);
-
     pubSub.publish("userJoinedRoom-" + roomId, {
       id: messageSent.id,
       text: messageSent.text,
