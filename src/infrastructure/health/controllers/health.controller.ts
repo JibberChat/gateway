@@ -1,7 +1,9 @@
+import { Public } from "@decorators/public.decorator";
+
 import { Controller, Get } from "@nestjs/common";
 import { DiskHealthIndicator, HealthCheck, HealthCheckService, MemoryHealthIndicator } from "@nestjs/terminus";
 
-@Controller("health")
+@Controller({ path: "health" })
 export class HealthController {
   constructor(
     private readonly health: HealthCheckService,
@@ -9,7 +11,8 @@ export class HealthController {
     private readonly memory: MemoryHealthIndicator
   ) {}
 
-  @Get()
+  @Public()
+  @Get("")
   @HealthCheck()
   check() {
     return this.health.check([

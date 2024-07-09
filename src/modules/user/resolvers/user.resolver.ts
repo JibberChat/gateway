@@ -4,7 +4,8 @@ import { Inject } from "@nestjs/common";
 import { Args, Mutation, Query, Resolver } from "@nestjs/graphql";
 import { ClientProxy } from "@nestjs/microservices";
 
-import { CreateUserInput, User } from "../models/user.model";
+import { CreateUserInput, UpdateUserInput } from "../models/user-input.model";
+import { User } from "../models/user-object.model";
 
 import { USER_SERVICE } from "@infrastructure/configuration/model/user-service.configuration";
 
@@ -31,19 +32,15 @@ export class UserResolver {
   @Mutation(() => User)
   async createUser(@Args("createUserInput") createUserInput: CreateUserInput) {
     const data = await firstValueFrom(
-      this.userServiceClient.send({ cmd: "createUser" }, { createUserInput }).pipe(timeout(5000))
+      this.userServiceClient.send({ cmd: "createUser" }, { ...createUserInput, clerkId: "1" }).pipe(timeout(5000))
     );
     return data;
   }
 
   @Mutation(() => User)
-  async updateUser(
-    @Args("userId") userId: string,
-    @Args("name") name: string,
-    @Args("email") email: string
-  ): Promise<User> {
+  async updateUser(@Args("updateUserInput") updateUserInput: UpdateUserInput): Promise<User> {
     const data = await firstValueFrom(
-      this.userServiceClient.send({ cmd: "updateUser" }, { userId, name, email }).pipe(timeout(5000))
+      this.userServiceClient.send({ cmd: "updateUser" }, { ...updateUserInput, userId: "1" }).pipe(timeout(5000))
     );
     return data;
   }

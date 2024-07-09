@@ -39,7 +39,7 @@ type Mutation {
   leaveRoom(leaveRoomInput: DeleteOrLeaveRoomInput!): Boolean!
   sendMessage(message: String!, roomId: String!): ChatMessage!
   updateRoom(updateRoomInput: UpdateRoomInput!): ChatRoom!
-  updateUser(email: String!, name: String!, userId: String!): User!
+  updateUser(updateUserInput: UpdateUserInput!): User!
 }
 
 type Query {
@@ -57,6 +57,11 @@ type Subscription {
 
 input UpdateRoomInput {
   id: ID!
+  name: String!
+}
+
+input UpdateUserInput {
+  email: String!
   name: String!
 }
 

@@ -10,11 +10,17 @@ export class LoggerInterceptor implements NestInterceptor {
   constructor(private readonly loggerService: LoggerService) {}
 
   intercept(context: ExecutionContext, next: CallHandler) {
-    const args = context.getArgs();
-    const req = args[3];
-    const { key, typename } = req.path;
+    const contextType = context.getType();
 
-    this.loggerService.info(yellow("Request ") + JSON.stringify({ key, typename }), this.constructor.name);
+    if (contextType === "http") {
+    } else {
+      const args = context.getArgs();
+      const req = args[3];
+      const { key, typename } = req.path;
+
+      this.loggerService.info(yellow("Request ") + JSON.stringify({ key, typename }), this.constructor.name);
+    }
+
     return next
       .handle()
       .pipe(
