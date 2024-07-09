@@ -4,7 +4,7 @@ import { Inject } from "@nestjs/common";
 import { Args, Mutation, Query, Resolver } from "@nestjs/graphql";
 import { ClientProxy } from "@nestjs/microservices";
 
-import { User } from "./user.model";
+import { CreateUserInput, User } from "./user.model";
 
 import { USER_SERVICE } from "@infrastructure/configuration/model/user-service.configuration";
 
@@ -26,6 +26,14 @@ export class UserResolver {
       this.userServiceClient.send({ cmd: "getUserProfile" }, { userId }).pipe(timeout(5000))
     );
     return data;
+  }
+
+  @Mutation(() => User)
+  async createUser(@Args("createUserInput") createUserInput: CreateUserInput) {
+    const data = await firstValueFrom(
+      this.userServiceClient.send({ cmd: "createUser" }, {createUserInput}).pipe(timeout(5000))
+    );
+    return data
   }
 
   @Mutation(() => User)
