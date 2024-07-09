@@ -19,10 +19,11 @@
     "noFallthroughCasesInSwitch": false,
     "strict": true,
     "paths": {
-      "@resolvers/*": ["./src/resolvers/*"],
+      "@modules/*": ["./src/modules/*"],
       "@common/*": ["./src/common/*"],
       "@infrastructure/*": ["./src/infrastructure/*"],
       "@helpers/*": ["./src/helpers/*"],
+      "@decorators/*": ["./src/decorators/*"],
     },
   }
 }

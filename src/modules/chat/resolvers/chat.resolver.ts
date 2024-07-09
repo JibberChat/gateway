@@ -1,3 +1,4 @@
+import { Public } from "@decorators/public.decorator";
 import { catchError, firstValueFrom, timeout } from "rxjs";
 import { pubSub } from "src/pubsub";
 
@@ -5,7 +6,7 @@ import { Inject } from "@nestjs/common";
 import { Args, Mutation, Query, Resolver, Subscription } from "@nestjs/graphql";
 import { ClientProxy } from "@nestjs/microservices";
 
-import { ChatMessage } from "./models/message-object.model";
+import { ChatMessage } from "../models/message-object.model";
 
 import { CHAT_SERVICE } from "@infrastructure/configuration/model/chat-service.configuration";
 import { LoggerService } from "@infrastructure/logger/services/logger.service";
@@ -20,7 +21,7 @@ export class ChatResolver {
   @Query(() => [ChatMessage])
   async getRoomMessages(@Args("roomId") roomId: string): Promise<ChatMessage[]> {
     const data: ChatMessage[] = await firstValueFrom(
-      this.chatServiceClient.send({ cmd: "getRoomMessages" }, { roomId: roomId }).pipe(timeout(5000))
+      this.chatServiceClient.send({ cmd: "getRoomMessages" }, { roomId }).pipe(timeout(5000))
     );
     return data;
   }
@@ -64,10 +65,18 @@ export class ChatResolver {
         )
     );
 
-    pubSub.publish("userJoinedRoom-" + roomId, { id: messageSent.id, text: messageSent.text, user: messageSent.user });
-    return { id: "1", text: message };
+    console.log("messageSent", messageSent);
+
+    pubSub.publish("userJoinedRoom-" + roomId, {
+      id: messageSent.id,
+      text: messageSent.text,
+      createdAt: new Date(messageSent.createdAt),
+      user: messageSent.user,
+    });
+    return messageSent;
   }
 
+  @Public()
   @Subscription(() => ChatMessage, {
     resolve: (payload) => payload,
   })

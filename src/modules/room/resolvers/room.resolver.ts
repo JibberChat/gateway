@@ -4,8 +4,8 @@ import { Inject } from "@nestjs/common";
 import { Args, Mutation, Query, Resolver } from "@nestjs/graphql";
 import { ClientProxy } from "@nestjs/microservices";
 
-import { CreateRoomInput, DeleteOrLeaveRoomInput, UpdateRoomInput } from "./models/room-input.model";
-import { ChatRoom } from "./models/room-object.model";
+import { CreateRoomInput, DeleteOrLeaveRoomInput, UpdateRoomInput } from "../models/room-input.model";
+import { ChatRoom } from "../models/room-object.model";
 
 import { CHAT_SERVICE } from "@infrastructure/configuration/model/chat-service.configuration";
 

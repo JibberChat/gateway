@@ -2,7 +2,9 @@ import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 
 import { APP_NAME, APP_PORT, APP_VERSION, AppConfiguration, NODE_ENV } from "../model/app-configuration";
+import { AUTH_DOMAIN, AUTH_JWT_KEY, AuthConfiguration } from "../model/auth-configuration";
 import { CHAT_SERVICE_HOST, CHAT_SERVICE_PORT } from "../model/chat-service.configuration";
+import { FRONT_DOMAIN, FrontConfiguration } from "../model/front-configuration";
 import { MEDIA_SERVICE_HOST, MEDIA_SERVICE_PORT } from "../model/media-service.configuration";
 import { USER_SERVICE_HOST, USER_SERVICE_PORT, UserServiceConfiguration } from "../model/user-service.configuration";
 
@@ -13,6 +15,8 @@ export class ConfigurationService {
   private logger = new LoggerService();
 
   private _appConfig!: AppConfiguration;
+  private _frontConfig!: FrontConfiguration;
+  private _authConfig!: AuthConfiguration;
   private _userServiceConfig!: UserServiceConfiguration;
   private _chatServiceConfig!: UserServiceConfiguration;
   private _mediaServiceConfig!: UserServiceConfiguration;
@@ -21,6 +25,14 @@ export class ConfigurationService {
 
   get appConfig(): AppConfiguration {
     return this._appConfig;
+  }
+
+  get frontConfig(): FrontConfiguration {
+    return this._frontConfig;
+  }
+
+  get authConfig(): AuthConfiguration {
+    return this._authConfig;
   }
 
   get userServiceConfig(): UserServiceConfiguration {
@@ -53,6 +65,17 @@ export class ConfigurationService {
     };
 
     this.isProd = appEnv.includes("prod");
+
+    // FRONT
+    this._frontConfig = {
+      domain: this.getVariableFromEnvFile(FRONT_DOMAIN),
+    };
+
+    // AUTH
+    this._authConfig = {
+      domain: this.getVariableFromEnvFile(AUTH_DOMAIN),
+      jwtKey: this.getVariableFromEnvFile(AUTH_JWT_KEY),
+    };
 
     // USER SERVICE
     this._userServiceConfig = {

@@ -15,15 +15,18 @@ import { ConfigurationService } from "@infrastructure/configuration/services/con
 import { HealthModule } from "@infrastructure/health/health.module";
 import { LoggerModule } from "@infrastructure/logger/logger.module";
 
-import { ChatResolver } from "@resolvers/chat/chat.resolver";
-import { MediaResolver } from "@resolvers/media/media.resolver";
-import { RoomResolver } from "@resolvers/room/room.resolver";
-import { UserResolver } from "@resolvers/user/user.resolver";
+import { AuthModule } from "@modules/auth/auth.module";
+import { ChatResolver } from "@modules/chat/resolvers/chat.resolver";
+import { MediaResolver } from "@modules/media/resolvers/media.resolver";
+import { RoomResolver } from "@modules/room/resolvers/room.resolver";
+import { UserResolver } from "@modules/user/resolvers/user.resolver";
 
 import { upperDirectiveTransformer } from "@common/directives/uper-case.directive";
+import { DateScalar } from "@common/scalars/date.scalar";
 
 @Module({
   imports: [
+    AuthModule,
     ConfigurationModule,
     HealthModule,
     LoggerModule,
@@ -34,6 +37,7 @@ import { upperDirectiveTransformer } from "@common/directives/uper-case.directiv
       sortSchema: true,
       transformSchema: (schema) => upperDirectiveTransformer(schema, "upper"),
       playground: true,
+      context: ({ req, res }) => ({ req, res }),
       buildSchemaOptions: {
         directives: [
           new GraphQLDirective({
@@ -102,6 +106,6 @@ import { upperDirectiveTransformer } from "@common/directives/uper-case.directiv
       ],
     }),
   ],
-  providers: [UserResolver, ChatResolver, RoomResolver, MediaResolver],
+  providers: [UserResolver, ChatResolver, RoomResolver, MediaResolver, DateScalar],
 })
 export class AppModule {}

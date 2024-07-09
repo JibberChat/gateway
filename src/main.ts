@@ -1,3 +1,4 @@
+import * as cookieParser from "cookie-parser";
 import { json, urlencoded } from "express";
 import helmet from "helmet";
 import * as morgan from "morgan";
@@ -5,7 +6,7 @@ import * as morgan from "morgan";
 import { ValidationPipe } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
 
-import { AppModule } from "./app.module";
+import { AppModule } from "./modules/app.module";
 
 import { ConfigurationService } from "@infrastructure/configuration/services/configuration.service";
 import { GlobalExceptionFilter } from "@infrastructure/filter/global-exception.filter";
@@ -26,7 +27,11 @@ async function bootstrap() {
   app.use(json({ limit: "50mb" }));
   app.use(urlencoded({ extended: true, limit: "50mb" }));
   app.use(helmet({ contentSecurityPolicy: false }));
-  app.enableCors();
+  app.enableCors({
+    origin: configService.frontConfig.domain,
+    credentials: true,
+  });
+  app.use(cookieParser());
 
   app.useGlobalFilters(new GlobalExceptionFilter(loggerService));
   app.useGlobalInterceptors(new LoggerInterceptor(loggerService));

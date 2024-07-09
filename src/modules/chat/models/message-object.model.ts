@@ -1,6 +1,6 @@
 import { Field, ObjectType } from "@nestjs/graphql";
 
-import { UserMessage } from "@resolvers/user/user.model";
+import { UserMessage } from "@modules/user/models/user.model";
 
 @ObjectType()
 export class ChatMessage {
@@ -9,6 +9,9 @@ export class ChatMessage {
 
   @Field()
   text: string;
+
+  @Field(() => Date)
+  createdAt: Date;
 
   @Field()
   user: UserMessage;

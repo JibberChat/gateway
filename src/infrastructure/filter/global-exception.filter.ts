@@ -51,7 +51,6 @@ export class GlobalExceptionFilter implements ExceptionFilter, GqlExceptionFilte
           throw new ApolloError(message, String(statusCode));
         }
       } else {
-        // Unexpected internal error, log and throw ApolloError
         const error = new Error(`Unexpected internal error, ${inspect(exception)}`);
         this.logger.error(LOG_PREFIX + " " + error.message, this.constructor.name, error.stack ?? String(error));
         throw new ApolloError(MESSAGES.CONTACT_ADMIN);

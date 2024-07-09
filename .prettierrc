@@ -10,7 +10,7 @@
     "^@nestjs/(.*)$",
     "^[./]",
     "^@infrastructure/(.*)$",
-    "^@resolvers/(.*)$",
+    "^@modules/(.*)$",
     "^@helpers/(.*)$",
     "^@common/(.*)$"
   ],
