@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jibber-gateway
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jibber-gateway
+  template:
+    metadata:
+      labels:
+        app: jibber-gateway
+    spec:
+      containers:
+        - name: jibber-gateway
+          image: 381491900726.dkr.ecr.eu-west-1.amazonaws.com/jibber-ecr-registry:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: jibber-gateway-config
