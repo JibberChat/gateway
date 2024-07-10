@@ -1,0 +1,15 @@
+# Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: jibber-gateway
+  labels:
+    app: jibber-gateway
+spec:
+  selector:
+    app: jibber-gateway
+  ports:
+    - protocol: TCP
+      port: 80 # The port that the service will be exposed on
+      targetPort: 8080 # The port on the container that the service should target
+  type: LoadBalancer # Can be LoadBalancer, NodePort, or ClusterIP

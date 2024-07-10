@@ -21,4 +21,10 @@ export class HealthController {
       // () => this.memory.checkRSS("memory_rss", 300 * 1024 * 1024),
     ]);
   }
+
+  @Public()
+  @Get("ping")
+  ping() {
+    return "pong";
+  }
 }
