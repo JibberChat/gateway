@@ -34,7 +34,7 @@ jobs:
           sudo mv ./kubectl /usr/local/bin/kubectl
 
       - name: Update kubeconfig
-        run: aws eks --${{ secrets.AWS_REGION }} update-kubeconfig --name jibber-eks
+        run: aws eks --region ${{ secrets.AWS_REGION }} update-kubeconfig --name jibber-eks
 
       - name: Deploy to EKS
         run: |
