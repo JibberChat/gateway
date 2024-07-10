@@ -12,7 +12,7 @@ export class CreateRoomInput {
 @InputType()
 export class UpdateRoomInput {
   @Field(() => ID)
-  id: string;
+  roomId: string;
 
   @Field()
   @Length(1, 255)
@@ -22,5 +22,5 @@ export class UpdateRoomInput {
 @InputType()
 export class DeleteOrLeaveRoomInput {
   @Field(() => ID)
-  id: string;
+  roomId: string;
 }

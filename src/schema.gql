@@ -29,7 +29,7 @@ input CreateUserInput {
 scalar Date
 
 input DeleteOrLeaveRoomInput {
-  id: ID!
+  roomId: ID!
 }
 
 type Mutation {
@@ -56,8 +56,8 @@ type Subscription {
 }
 
 input UpdateRoomInput {
-  id: ID!
   name: String!
+  roomId: ID!
 }
 
 input UpdateUserInput {
