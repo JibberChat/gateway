@@ -19,13 +19,12 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Login to ECR
-        run: aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
+        run: |
+          aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
 
       - name: Build image
         run: |
-          docker buildx create --name mybuilder
-          docker buildx use mybuilder
-          docker buildx build --platform linux/amd64,linux/arm64 -t ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/jibber-ecr-registry:${{ github.sha }} .
+          docker build -t ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/jibber-ecr-registry:${{ github.sha }} .
 
       - name: Push image
         run: docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/jibber-ecr-registry:${{ github.sha }}
@@ -41,6 +40,7 @@ jobs:
 
       - name: Deploy to EKS
         run: |
+          kubectl set image deployment/jibber-gateway jibber-gateway=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/jibber-ecr-registry:${{ github.sha }}
           kubectl apply -f k8s/configmap.yml
           kubectl apply -f k8s/deployment.yml
           kubectl apply -f k8s/service.yml
