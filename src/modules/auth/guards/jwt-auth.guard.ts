@@ -1,10 +1,13 @@
 import { clerkClient } from "@clerk/clerk-sdk-node";
 import { IS_PUBLIC_KEY } from "@decorators/public.decorator";
+import { firstValueFrom } from "rxjs";
 
-import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from "@nestjs/common";
+import { CanActivate, ExecutionContext, Inject, Injectable, UnauthorizedException } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
 import { GqlExecutionContext } from "@nestjs/graphql";
+import { ClientProxy } from "@nestjs/microservices";
 
+import { USER_SERVICE } from "@infrastructure/configuration/model/user-service.configuration";
 import { ConfigurationService } from "@infrastructure/configuration/services/configuration.service";
 import { LoggerService } from "@infrastructure/logger/services/logger.service";
 
@@ -13,7 +16,8 @@ export class ClerkAuthGuard implements CanActivate {
   constructor(
     private reflector: Reflector,
     private configService: ConfigurationService,
-    private logger: LoggerService
+    private logger: LoggerService,
+    @Inject(USER_SERVICE) private readonly userServiceClient: ClientProxy
   ) {}
 
   async canActivate(context: ExecutionContext) {
@@ -22,7 +26,6 @@ export class ClerkAuthGuard implements CanActivate {
       context.getClass(),
     ]);
 
-    return true;
     if (isPublic) return true;
 
     const req = this.getRequest(context);
@@ -34,15 +37,15 @@ export class ClerkAuthGuard implements CanActivate {
         jwtKey: this.configService.authConfig.jwtKey,
       });
 
-      if (verify) {
-        req.user = verify;
-        return true;
-      }
-    } catch (error) {
-      this.logger.error(String(error), this.constructor.name);
-    }
+      if (!verify) throw new UnauthorizedException();
 
-    throw new UnauthorizedException();
+      const user = await firstValueFrom(this.userServiceClient.send({ cmd: "getMe" }, { userId: verify.sub }));
+      req.user = user;
+
+      return true;
+    } catch {
+      throw new UnauthorizedException();
+    }
   }
 
   getRequest(context: ExecutionContext) {

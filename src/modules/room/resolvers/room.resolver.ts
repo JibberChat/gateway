@@ -1,3 +1,4 @@
+import { GetUser } from "@decorators/get-user.decorator";
 import { firstValueFrom, timeout } from "rxjs";
 
 import { Inject } from "@nestjs/common";
@@ -9,56 +10,57 @@ import { ChatRoom } from "../models/room-object.model";
 
 import { CHAT_SERVICE } from "@infrastructure/configuration/model/chat-service.configuration";
 
+import { GetUserEntity } from "@modules/user/entities/user.entity";
+
 @Resolver()
 export class RoomResolver {
   constructor(@Inject(CHAT_SERVICE) private readonly chatServiceClient: ClientProxy) {}
 
   @Query(() => [ChatRoom])
-  async getUserRooms(): Promise<ChatRoom | []> {
-    const data = await firstValueFrom(
-      this.chatServiceClient.send({ cmd: "getUserRooms" }, { userId: "1" }).pipe(timeout(5000))
+  async getUserRooms(@GetUser() user: GetUserEntity): Promise<ChatRoom | []> {
+    return await firstValueFrom(
+      this.chatServiceClient.send({ cmd: "getUserRooms" }, { userId: user.id }).pipe(timeout(5000))
     );
-    return data;
   }
 
   @Query(() => [ChatRoom])
-  async getUnreadUserRooms(): Promise<ChatRoom> {
-    const data = await firstValueFrom(
-      this.chatServiceClient.send({ cmd: "getUnreadUserRooms" }, { userId: "1" }).pipe(timeout(5000))
+  async getUnreadUserRooms(@GetUser() user: GetUserEntity): Promise<ChatRoom> {
+    return await firstValueFrom(
+      this.chatServiceClient.send({ cmd: "getUnreadUserRooms" }, { userId: user.id }).pipe(timeout(5000))
     );
-    return data;
   }
 
   @Mutation(() => ChatRoom)
-  async createRoom(@Args("createRoomInput") createRoomInput: CreateRoomInput): Promise<ChatRoom> {
-    const data = await firstValueFrom(
+  async createRoom(
+    @GetUser() user: GetUserEntity,
+    @Args("createRoomInput") createRoomInput: CreateRoomInput
+  ): Promise<ChatRoom> {
+    return await firstValueFrom(
       this.chatServiceClient
-        .send({ cmd: "createRoom" }, { name: createRoomInput.name, userId: "1" })
+        .send({ cmd: "createRoom" }, { name: createRoomInput.name, userId: user.id })
         .pipe(timeout(5000))
     );
-    return data;
   }
 
   @Mutation(() => ChatRoom)
   async updateRoom(@Args("updateRoomInput") updateRoomInput: UpdateRoomInput) {
-    const data = await firstValueFrom(
+    return await firstValueFrom(
       this.chatServiceClient.send({ cmd: "updateRoom" }, updateRoomInput).pipe(timeout(5000))
     );
-    return data;
   }
 
   @Mutation(() => Boolean)
-  async deleteRoom(@Args("deleteRoomInput") deleteRoomInput: DeleteOrLeaveRoomInput) {
+  async deleteRoom(@GetUser() user: GetUserEntity, @Args("deleteRoomInput") deleteRoomInput: DeleteOrLeaveRoomInput) {
     const data = await firstValueFrom(
-      this.chatServiceClient.send({ cmd: "deleteRoom" }, { ...deleteRoomInput, userId: "1" }).pipe(timeout(5000))
+      this.chatServiceClient.send({ cmd: "deleteRoom" }, { ...deleteRoomInput, userId: user.id }).pipe(timeout(5000))
     );
     return data.success;
   }
 
   @Mutation(() => Boolean)
-  async leaveRoom(@Args("leaveRoomInput") leaveRoomInput: DeleteOrLeaveRoomInput) {
+  async leaveRoom(@GetUser() user: GetUserEntity, @Args("leaveRoomInput") leaveRoomInput: DeleteOrLeaveRoomInput) {
     const data = await firstValueFrom(
-      this.chatServiceClient.send({ cmd: "leaveRoom" }, { ...leaveRoomInput, userId: "1" }).pipe(timeout(5000))
+      this.chatServiceClient.send({ cmd: "leaveRoom" }, { ...leaveRoomInput, userId: user.id }).pipe(timeout(5000))
     );
     return data.success;
   }

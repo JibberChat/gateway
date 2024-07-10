@@ -1,3 +1,4 @@
+import { GetUser } from "@decorators/get-user.decorator";
 import { Public } from "@decorators/public.decorator";
 import { catchError, firstValueFrom, timeout } from "rxjs";
 import { pubSub } from "src/pubsub";
@@ -10,6 +11,8 @@ import { ChatMessage } from "../models/message-object.model";
 
 import { CHAT_SERVICE } from "@infrastructure/configuration/model/chat-service.configuration";
 import { LoggerService } from "@infrastructure/logger/services/logger.service";
+
+import { GetUserEntity } from "@modules/user/entities/user.entity";
 
 @Resolver()
 export class ChatResolver {
@@ -27,7 +30,7 @@ export class ChatResolver {
   }
 
   @Mutation(() => ChatMessage)
-  async sendMessage(@Args("roomId") roomId: string, @Args("message") message: string) {
+  async sendMessage(@GetUser() user: GetUserEntity, @Args("roomId") roomId: string, @Args("message") message: string) {
     // const room = await firstValueFrom(
     //   this.chatServiceClient
     //     .send(
@@ -53,7 +56,8 @@ export class ChatResolver {
           { cmd: "sendMessageToRoom" },
           {
             message,
-            roomId: roomId,
+            roomId,
+            userId: user.id,
           }
         )
         .pipe(
