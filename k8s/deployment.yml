@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: jibber-gateway
-          image: 381491900726.dkr.ecr.eu-west-1.amazonaws.com/jibber-ecr-registry:latest
+          image: 381491900726.dkr.ecr.eu-west-1.amazonaws.com/gateway-ecr-registry:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 8080

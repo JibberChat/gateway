@@ -29,7 +29,7 @@ jobs:
 
       - name: Build and push Docker image (ARM64)
         run: |
-          docker buildx build --platform linux/arm64 -t ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/jibber-ecr-registry:${{ github.sha }} --push .
+          docker buildx build --platform linux/arm64 -t ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/gateway-ecr-registry:${{ github.sha }} --push .
 
       - name: Install kubectl
         run: |
@@ -42,7 +42,7 @@ jobs:
 
       - name: Deploy to EKS
         run: |
-          kubectl set image deployment/jibber-gateway jibber-gateway=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/jibber-ecr-registry:${{ github.sha }}
+          kubectl set image deployment/jibber-gateway jibber-gateway=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/gateway-ecr-registry:${{ github.sha }}
           kubectl -n default rollout status deployment/jibber-gateway
           kubectl apply -f k8s/configmap.yml
           kubectl apply -f k8s/deployment.yml
