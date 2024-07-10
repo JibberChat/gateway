@@ -59,9 +59,12 @@ export class UserResolver {
   }
 
   @Mutation(() => User)
-  async updateUser(@Args("updateUserInput") updateUserInput: UpdateUserInput): Promise<User> {
+  async updateUser(@Args("updateUserInput") updateUserInput: UpdateUserInput,
+  @GetUser() user: GetUserEntity,
+
+): Promise<User> {
     const data = await firstValueFrom(
-      this.userServiceClient.send({ cmd: "updateUser" }, { ...updateUserInput, userId: "1" }).pipe(timeout(5000))
+      this.userServiceClient.send({ cmd: "updateUser" }, { ...updateUserInput, userId: user.id }).pipe(timeout(5000))
     );
     return data;
   }
