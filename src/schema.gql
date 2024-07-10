@@ -78,5 +78,6 @@ type User {
 }
 
 type UserMessage {
+  id: ID!
   name: String!
 }

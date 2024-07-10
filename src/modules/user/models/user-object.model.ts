@@ -17,6 +17,9 @@ export class User {
 
 @ObjectType()
 export class UserMessage {
+  @Field(() => ID)
+  id: string;
+
   @Field()
   name: string;
 }

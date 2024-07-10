@@ -36,10 +36,11 @@ export class ClerkAuthGuard implements CanActivate {
       const verify = await clerkClient.verifyToken(req.cookies.__session, {
         jwtKey: this.configService.authConfig.jwtKey,
       });
-
       if (!verify) throw new UnauthorizedException();
 
       const user = await firstValueFrom(this.userServiceClient.send({ cmd: "getMe" }, { userId: verify.sub }));
+      if (!user) throw new UnauthorizedException();
+
       req.user = user;
 
       return true;
