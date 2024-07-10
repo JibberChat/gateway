@@ -5,7 +5,12 @@ import { Inject } from "@nestjs/common";
 import { Args, Mutation, Query, Resolver } from "@nestjs/graphql";
 import { ClientProxy } from "@nestjs/microservices";
 
-import { CreateRoomInput, DeleteOrLeaveRoomInput, UpdateRoomInput } from "../models/room-input.model";
+import {
+  CreateRoomInput,
+  DeleteOrLeaveRoomInput,
+  InviteUserToRoomInput,
+  UpdateRoomInput,
+} from "../models/room-input.model";
 import { ChatRoom } from "../models/room-object.model";
 
 import { CHAT_SERVICE } from "@infrastructure/configuration/model/chat-service.configuration";
@@ -30,6 +35,19 @@ export class RoomResolver {
     );
   }
 
+  @Mutation(() => Boolean)
+  async inviteUserToRoom(
+    @GetUser() user: GetUserEntity,
+    @Args("inviteUserToRoomInput") inviteUserToRoomInput: InviteUserToRoomInput
+  ): Promise<boolean> {
+    const data = await firstValueFrom(
+      this.chatServiceClient
+        .send({ cmd: "inviteUserToRoom" }, { ...inviteUserToRoomInput, userId: user.id })
+        .pipe(timeout(5000))
+    );
+    return data.success;
+  }
+
   @Mutation(() => ChatRoom)
   async createRoom(
     @GetUser() user: GetUserEntity,
@@ -43,14 +61,17 @@ export class RoomResolver {
   }
 
   @Mutation(() => ChatRoom)
-  async updateRoom(@Args("updateRoomInput") updateRoomInput: UpdateRoomInput) {
+  async updateRoom(@Args("updateRoomInput") updateRoomInput: UpdateRoomInput): Promise<ChatRoom> {
     return await firstValueFrom(
       this.chatServiceClient.send({ cmd: "updateRoom" }, updateRoomInput).pipe(timeout(5000))
     );
   }
 
   @Mutation(() => Boolean)
-  async deleteRoom(@GetUser() user: GetUserEntity, @Args("deleteRoomInput") deleteRoomInput: DeleteOrLeaveRoomInput) {
+  async deleteRoom(
+    @GetUser() user: GetUserEntity,
+    @Args("deleteRoomInput") deleteRoomInput: DeleteOrLeaveRoomInput
+  ): Promise<boolean> {
     const data = await firstValueFrom(
       this.chatServiceClient.send({ cmd: "deleteRoom" }, { ...deleteRoomInput, userId: user.id }).pipe(timeout(5000))
     );
@@ -58,7 +79,10 @@ export class RoomResolver {
   }
 
   @Mutation(() => Boolean)
-  async leaveRoom(@GetUser() user: GetUserEntity, @Args("leaveRoomInput") leaveRoomInput: DeleteOrLeaveRoomInput) {
+  async leaveRoom(
+    @GetUser() user: GetUserEntity,
+    @Args("leaveRoomInput") leaveRoomInput: DeleteOrLeaveRoomInput
+  ): Promise<boolean> {
     const data = await firstValueFrom(
       this.chatServiceClient.send({ cmd: "leaveRoom" }, { ...leaveRoomInput, userId: user.id }).pipe(timeout(5000))
     );

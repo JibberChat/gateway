@@ -18,8 +18,4 @@ export class UpdateUserInput {
   @Field()
   @Length(1, 255)
   name: string;
-
-  @Field()
-  @IsEmail()
-  email: string;
 }

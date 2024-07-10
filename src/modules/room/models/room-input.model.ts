@@ -1,4 +1,4 @@
-import { Length } from "class-validator";
+import { IsEmail, Length } from "class-validator";
 
 import { Field, ID, InputType } from "@nestjs/graphql";
 
@@ -23,4 +23,14 @@ export class UpdateRoomInput {
 export class DeleteOrLeaveRoomInput {
   @Field(() => ID)
   roomId: string;
+}
+
+@InputType()
+export class InviteUserToRoomInput {
+  @Field(() => ID)
+  roomId: string;
+
+  @Field()
+  @IsEmail()
+  userEmail: string;
 }

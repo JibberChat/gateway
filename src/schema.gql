@@ -32,10 +32,16 @@ input DeleteOrLeaveRoomInput {
   roomId: ID!
 }
 
+input InviteUserToRoomInput {
+  roomId: ID!
+  userEmail: String!
+}
+
 type Mutation {
   createRoom(createRoomInput: CreateRoomInput!): ChatRoom!
   createUser(createUserInput: CreateUserInput!): User!
   deleteRoom(deleteRoomInput: DeleteOrLeaveRoomInput!): Boolean!
+  inviteUserToRoom(inviteUserToRoomInput: InviteUserToRoomInput!): Boolean!
   leaveRoom(leaveRoomInput: DeleteOrLeaveRoomInput!): Boolean!
   sendMessage(message: String!, roomId: String!): ChatMessage!
   updateRoom(updateRoomInput: UpdateRoomInput!): ChatRoom!
@@ -61,7 +67,6 @@ input UpdateRoomInput {
 }
 
 input UpdateUserInput {
-  email: String!
   name: String!
 }
 
