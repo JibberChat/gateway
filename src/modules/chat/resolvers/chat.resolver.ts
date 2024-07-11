@@ -31,25 +31,6 @@ export class ChatResolver {
 
   @Mutation(() => ChatMessage)
   async sendMessage(@GetUser() user: GetUserEntity, @Args("roomId") roomId: string, @Args("message") message: string) {
-    // const room = await firstValueFrom(
-    //   this.chatServiceClient
-    //     .send(
-    //       { cmd: "getRoomOfUser" },
-    //       {
-    //         userId: "1",
-    //       }
-    //     )
-    //     .pipe(
-    //       timeout(5000),
-    //       catchError((err) => {
-    //         this.loggerService.error("Error getting room:", err);
-    //         throw new Error("Error getting room");
-    //       })
-    //     )
-    // );
-
-    // if (!room || roomId !== room.id) throw new Error("User is not authorized to send message");
-
     const messageSent = await firstValueFrom(
       this.chatServiceClient
         .send(
@@ -83,7 +64,6 @@ export class ChatResolver {
     resolve: (payload) => payload,
   })
   userJoinedRoom(@Args("roomId") roomId: string) {
-    // TODO: check if user is not already in the room and authorized to join the room
     return pubSub.asyncIterator(`userJoinedRoom-${roomId}`);
   }
 }
